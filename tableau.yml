@@ -1,0 +1,51 @@
+---
+- name: Playbook to stop the VMs
+  hosts: tableau_hosts
+  connection: local
+  gather_facts: yes
+  tasks:
+    - name: Deallocate the VM
+      azure_rm_virtualmachine:
+        resource_group: {{ rg_name }}
+        name: {{ vm_name }}
+        state: present
+        allocated: no
+	      client_id: {{ azure_client_id }}
+        secret: {{ azure_secret }}
+        subscription_id: {{ azure_subscription }}
+        tenant: {{ azure_tenant }}
+      tags: task1
+
+    - name: Deallocate the VMSS
+      azure_rm_virtualmachinescalesetinstance:
+        resource_group: {{ rg_name }}
+        vmss_name: {{ vmss_name }}
+        power_state: deallocated
+        client_id: {{ azure_client_id }}
+        secret: {{ azure_secret }}
+        subscription_id: {{ azure_subscription }}
+        tenant: {{ azure_tenant }}
+      tags: task2
+
+    - name: Start the VM
+      azure_rm_virtualmachine:
+        resource_group: {{ rg_name }}
+        name: {{ vm_name }}
+        allocated: yes
+        started: yes
+	      client_id: {{ azure_client_id }}
+        secret: {{ azure_secret }}
+        subscription_id: {{ azure_subscription }}
+        tenant: {{ azure_tenant }}
+      tags: task3
+
+    - name: Start the VMSS
+      azure_rm_virtualmachinescalesetinstance:
+        resource_group: {{ rg_name }}
+        vmss_name: {{ vmss_name }}
+        power_state: running
+        client_id: {{ azure_client_id }}
+        secret: {{ azure_secret }}
+        subscription_id: {{ azure_subscription }}
+        tenant: {{ azure_tenant }}
+      tags: task4
